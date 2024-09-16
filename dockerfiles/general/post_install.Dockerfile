@@ -17,8 +17,8 @@ WORKDIR /home/$UNAME
 COPY ./bashrc/.persona[l].bashrc /home/$UNAME/.personal.bashrc
 
 # Get new linting rules if changed:
-ADD https://api.github.com/repos/alliander-opensource/rcdt_public/git/refs/heads/main version.json
-RUN git clone https://github.com/alliander-opensource/rcdt_public
-RUN mv rcdt_public/pyproject.toml .
-RUN rm -rf rcdt_public
+ADD https://api.github.com/repos/alliander-opensource/rcdt_linting/git/refs/heads/main version.json
+RUN git clone https://github.com/alliander-opensource/rcdt_linting
+RUN mv rcdt_linting/config/pyproject.toml .
+RUN rm -rf rcdt_linting
 RUN rm version.json
