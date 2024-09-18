@@ -7,4 +7,4 @@ RUN apt install -y ros-humble-moveit-servo
 RUN apt install -y python3-pip
 RUN pip install dearpygui
 RUN pip install dearpygui-grid
-RUN pip install inputs
+RUN pip install pygame
