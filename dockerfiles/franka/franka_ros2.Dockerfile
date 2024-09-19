@@ -21,13 +21,15 @@ RUN apt install -y ros-${ROS_DISTRO}-realtime-tools
 RUN apt install -y ros-${ROS_DISTRO}-xacro
 RUN apt install -y ros-${ROS_DISTRO}-hardware-interface
 RUN apt install -y ros-${ROS_DISTRO}-ros-gz
-RUN apt install -y ros-${ROS_DISTRO}-gz-ros2-control
 RUN apt install -y python3-colcon-common-extensions
 
 RUN mkdir -p /home/$UNAME/franka_ros2_ws/src
 WORKDIR /home/$UNAME/franka_ros2_ws
 RUN git clone https://github.com/frankaemika/franka_ros2.git src/franka_ros2
 RUN git clone https://github.com/frankaemika/franka_description.git src/franka_description
+
+# Install gazebo plugin for jazzy:
+RUN if [ "$ROS_DISTRO" = "jazzy" ] ; then apt install -y ros-${ROS_DISTRO}-gz-ros2-control ; else : ; fi    
 
 # Some packages are compatible for ROS2 jazzy:
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-ignore joint_trajectory_controller franka_ign_ros2_control franka_semantic_components franka_robot_state_broadcaster franka_example_controllers
