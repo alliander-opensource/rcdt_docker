@@ -8,9 +8,9 @@ INCLUDE ./general/pre_install.Dockerfile
 
 #Install all franka requirements:
 INCLUDE ./franka/all.Dockerfile
-
-#Install all panther requirements:
 INCLUDE ./panther/all.Dockerfile
+    
+#Install all panther requirements:
 
 #Install moveit_servo:
 INCLUDE ./general/moveit_servo.Dockerfile
