@@ -12,5 +12,8 @@ INCLUDE ./franka/all.Dockerfile
 #Install all panther requirements:
 INCLUDE ./panther/all.Dockerfile
 
+#Install moveit_servo:
+INCLUDE ./general/moveit_servo.Dockerfile
+
 #Perfrom post-install steps:
 INCLUDE ./general/post_install.Dockerfile
