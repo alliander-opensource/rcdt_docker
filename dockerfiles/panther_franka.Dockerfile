@@ -3,17 +3,12 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-#Perfrom pre-install steps:
 INCLUDE ./general/pre_install.Dockerfile
 
-#Install all franka requirements:
-INCLUDE ./franka/all.Dockerfile
-INCLUDE ./panther/all.Dockerfile
-    
-#Install all panther requirements:
+INCLUDE ./general/package_install.Dockerfile
 
-#Install moveit_servo:
-INCLUDE ./general/moveit_servo.Dockerfile
+INCLUDE ./panther/main.Dockerfile
 
-#Perfrom post-install steps:
+INCLUDE ./franka/main.Dockerfile
+
 INCLUDE ./general/post_install.Dockerfile

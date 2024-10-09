@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: Alliander N. V.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # RCDT Docker
 
 The goal of this repository is to maintain a collection of Dockerfiles that can be used for the different projects in RCDT.
