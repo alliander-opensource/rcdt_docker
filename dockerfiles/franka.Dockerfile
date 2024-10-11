@@ -3,14 +3,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-#Perfrom pre-install steps:
 INCLUDE ./general/pre_install.Dockerfile
 
-#Install all franka requirements:
-INCLUDE ./franka/all.Dockerfile
+INCLUDE ./general/package_install.Dockerfile
 
-#Install moveit_servo:
-INCLUDE ./general/moveit_servo.Dockerfile
+INCLUDE ./franka/main.Dockerfile
 
-#Perfrom post-install steps:
 INCLUDE ./general/post_install.Dockerfile

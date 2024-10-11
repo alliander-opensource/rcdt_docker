@@ -3,11 +3,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-#Perfrom pre-install steps:
 INCLUDE ./general/pre_install.Dockerfile
 
-#Install all panther requirements:
-INCLUDE ./panther/all.Dockerfile
+INCLUDE ./general/package_install.Dockerfile
 
-#Perfrom post-install steps:
+INCLUDE ./panther/main.Dockerfile
+
 INCLUDE ./general/post_install.Dockerfile
