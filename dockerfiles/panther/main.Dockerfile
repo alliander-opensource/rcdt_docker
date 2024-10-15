@@ -17,6 +17,6 @@ RUN rm -rf src/ros2_controllers
 RUN rosdep update --rosdistro $ROS_DISTRO
 RUN rosdep install --from-paths src -y -i
 
-RUN . /opt/ros/$ROS_DISTRO/setup.sh && colcon build --symlink-install --packages-up-to panther --cmake-args -DCMAKE_BUILD_TYPE=Release
+RUN . /opt/ros/$ROS_DISTRO/setup.sh && colcon build --packages-up-to panther --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 RUN echo "source /home/$UNAME/husarion_ws/install/setup.bash" >> /home/$UNAME/.bashrc
