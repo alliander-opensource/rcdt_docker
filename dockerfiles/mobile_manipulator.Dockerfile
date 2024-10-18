@@ -7,8 +7,6 @@ INCLUDE ./general/pre_install.Dockerfile
 
 INCLUDE ./general/package_install.Dockerfile
 
-INCLUDE ./general/moveit_from_source.Dockerfile
-
 INCLUDE ./franka/main.Dockerfile
 
 INCLUDE ./panther/main.Dockerfile
