@@ -9,9 +9,6 @@ ARG UID
 ARG GID
 RUN apt update
 
-#Set entrypoint to bash:
-ENTRYPOINT ["/bin/bash"]
-
 #Remove existing user with same UID if exists:
 RUN if getent passwd $UID; then userdel $(id -nu $UID); else :; fi
 

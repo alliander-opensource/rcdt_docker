@@ -22,3 +22,6 @@ RUN git clone https://github.com/alliander-opensource/rcdt_linting
 RUN mv rcdt_linting/config/pyproject.toml .
 RUN rm -rf rcdt_linting
 RUN rm version.json
+
+#Set entrypoint to bash:
+ENTRYPOINT ["/bin/bash"]
