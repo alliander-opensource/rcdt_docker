@@ -45,28 +45,11 @@ fi
 mkdir -p ~/docker_ws
 mkdir -p ~/.vscode-server
 
-#If installed, launch the image with xhost:
+#If installed, launch the image:
 if $installed; then
     printf 'Starting %s...\n\n' "$image"
+    docker compose run --rm $image
 
-    printf "Get acces to xhost...\n"
-    xhost +local:docker
-    printf "Done. \n\n"
-
-    docker run -it --privileged --rm \
-        --memory=6g \
-        --env DISPLAY \
-        --env RCUTILS_COLORIZED_OUTPUT=1 \
-        --network=host \
-        -v /tmp/.X11-unix:/tmp/.X11-unix \
-        -v /dev/input:/dev/input \
-        -v ~/.vscode-server:/home/"$USER"/.vscode-server \
-        -v ~/docker_ws:/home/"$USER"/docker_ws \
-        "$image"
-
-    printf "\nStop accces to xhost...\n"
-    xhost -local:docker
-    printf "Done.\n"
 #If not installed, ask to install:
 else
     build=$(whiptail --title "Install?" \

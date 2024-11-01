@@ -1,0 +1,60 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+# 
+# SPDX-License-Identifier: Apache-2.0
+
+services:
+  franka:
+    image: franka
+    container_name: franka
+    network_mode: host
+    privileged: true
+    mem_limit: 6gb
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix"
+      - "${HOME}/.vscode-server:${HOME}/.vscode-server"
+      - "${HOME}/docker_ws:${HOME}/docker_ws"
+      - "/dev:/dev"
+    environment:
+      - "DISPLAY"
+      - "RCUTILS_COLORIZED_OUTPUT=1"
+  mobile_manipulator:
+    image: mobile_manipulator
+    container_name: mobile_manipulator
+    network_mode: host
+    privileged: true
+    mem_limit: 6gb
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix"
+      - "${HOME}/.vscode-server:${HOME}/.vscode-server"
+      - "${HOME}/docker_ws:${HOME}/docker_ws"
+      - "/dev/input:/dev/input"
+    environment:
+      - "DISPLAY"
+      - "RCUTILS_COLORIZED_OUTPUT=1"
+  panther:
+    image: panther
+    container_name: panther
+    network_mode: host
+    privileged: true
+    mem_limit: 6gb
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix"
+      - "${HOME}/.vscode-server:${HOME}/.vscode-server"
+      - "${HOME}/docker_ws:${HOME}/docker_ws"
+      - "/dev/input:/dev/input"
+    environment:
+      - "DISPLAY"
+      - "RCUTILS_COLORIZED_OUTPUT=1"
+  ros2:
+    image: ros2
+    container_name: ros2
+    network_mode: host
+    privileged: true
+    mem_limit: 6gb
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix"
+      - "${HOME}/.vscode-server:${HOME}/.vscode-server"
+      - "${HOME}/docker_ws:${HOME}/docker_ws"
+    environment:
+      - "DISPLAY"
+      - "RCUTILS_COLORIZED_OUTPUT=1"
