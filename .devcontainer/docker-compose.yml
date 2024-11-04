@@ -17,6 +17,7 @@ services:
     environment:
       - "DISPLAY"
       - "RCUTILS_COLORIZED_OUTPUT=1"
+    tty: true
   mobile_manipulator:
     image: mobile_manipulator
     container_name: mobile_manipulator
@@ -31,6 +32,7 @@ services:
     environment:
       - "DISPLAY"
       - "RCUTILS_COLORIZED_OUTPUT=1"
+    tty: true
   panther:
     image: panther
     container_name: panther
@@ -45,6 +47,7 @@ services:
     environment:
       - "DISPLAY"
       - "RCUTILS_COLORIZED_OUTPUT=1"
+    tty: true
   ros2:
     image: ros2
     container_name: ros2
@@ -58,3 +61,4 @@ services:
     environment:
       - "DISPLAY"
       - "RCUTILS_COLORIZED_OUTPUT=1"
+    tty: true

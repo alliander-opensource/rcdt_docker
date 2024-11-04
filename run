@@ -48,7 +48,7 @@ mkdir -p ~/.vscode-server
 #If installed, launch the image:
 if $installed; then
     printf 'Starting %s...\n\n' "$image"
-    docker compose run --rm $image
+    docker compose -f .devcontainer/docker-compose.yml run --rm $image
 
 #If not installed, ask to install:
 else
