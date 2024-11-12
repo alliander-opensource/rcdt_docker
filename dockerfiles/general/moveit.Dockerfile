@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 RUN mkdir -p /home/$UNAME/moveit_ws/src
 WORKDIR /home/$UNAME/moveit_ws/src
 
