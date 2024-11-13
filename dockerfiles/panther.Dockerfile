@@ -5,7 +5,9 @@
 
 INCLUDE ./general/pre_install.Dockerfile
 
-INCLUDE ./general/package_install.Dockerfile
+INCLUDE ./general/dep_core.Dockerfile
+
+INCLUDE ./general/moveit.Dockerfile
 
 INCLUDE ./panther/main.Dockerfile
 
