@@ -4,13 +4,14 @@
 # 
 # SPDX-License-Identifier: Apache-2.0
 
-set -e
-
-SCRIPT_DIR_PATH=$(dirname $(realpath "$0"))
-MENU_HEIGHT=$(($LINES))
-MENU_WIDTH=$(($COLUMNS))
-CHOICE_HEIGHT=$MENU_HEIGHT
+MENU_HEIGHT=$(($LINES - 3))
+MENU_WIDTH=$(($COLUMNS - 80))
 DOCKER_BUILDER_NAME=ram-constrained-builder
+
+SCRIPT_DIR_PATH=$(
+    cd "$(dirname "${BASH_SOURCE[0]}")" || exit
+    pwd -P
+)
 
 # If required directories do not exist, create them
 mkdir -p ~/docker_ws
@@ -23,16 +24,17 @@ for dockerfile in "$SCRIPT_DIR_PATH"/dockerfiles/*.Dockerfile; do
     options+=("$(basename "$name")")
     options+=("")
 done
+choice_height="${#options[@]}"
 
 # Ask user for image option
 image=$(whiptail --clear \
     --title "RCDT Docker Launcher" \
     --menu "Which docker image would you like to run?" \
-    $MENU_HEIGHT $MENU_WIDTH $CHOICE_HEIGHT \
+    $MENU_HEIGHT $MENU_WIDTH $choice_height \
     "${options[@]}" \
     2>&1 >/dev/tty)
 clear
-[[ -z "$image" ]] && exit 1
+[[ -z "$image" ]] && return 1
 
 if [ -z "$(docker images -q $image 2> /dev/null)" ]; then
     use_cache=$(whiptail --clear \
@@ -43,7 +45,7 @@ if [ -z "$(docker images -q $image 2> /dev/null)" ]; then
         "without cache" "" \
         2>&1 >/dev/tty)
     clear
-    [[ -z "$use_cache" ]] && exit 1
+    [[ -z "$use_cache" ]] && return 1
 
     colcon_build_sequential=$(whiptail --clear \
         --title "Build?" \
@@ -53,9 +55,11 @@ if [ -z "$(docker images -q $image 2> /dev/null)" ]; then
         "sequential" "" \
         2>&1 >/dev/tty)
     clear
-    [[ -z "$colcon_build_sequential" ]] && exit 1
+    [[ -z "$colcon_build_sequential" ]] && return 1
 
-    if [ ! "$(docker buildx inspect $DOCKER_BUILDER_NAME 2> /dev/null)" ]; then
+    ram_kb=$(grep MemTotal /proc/meminfo | awk '{print $2}')
+    RAM_CONSTRAINED=$([ $RAM_KB -lt 16000000 ] && echo "true" || echo "")
+    if [ ! "$(docker buildx inspect $DOCKER_BUILDER_NAME 2> /dev/null)" ] && [ $RAM_CONSTRAINED = "true" ]; then
         docker buildx create \
           --name $DOCKER_BUILDER_NAME \
           --driver=docker-container \
@@ -67,7 +71,7 @@ if [ -z "$(docker images -q $image 2> /dev/null)" ]; then
     COLCON_BUILD_SEQUENTIAL=$([ "$colcon_build_sequential" == "sequential" ] && echo "true" || echo "")
     docker build \
       ${NO_CACHE:+--no-cache} \
-      --builder=$DOCKER_BUILDER_NAME \
+      ${RAM_CONSTRAINED:+--builder=$DOCKER_BUILDER_NAME} \
       --build-arg UNAME="$USER" \
       --build-arg UID="$(id -u)" \
       --build-arg GID="$(id -g)" \
