@@ -9,7 +9,7 @@
 # rcdt_detection
 RUN python3 -m pip install pyrealsense2
 RUN python3 -m pip install ultralytics
-RUN python3 -m pip install "numpy<2.0"
+RUN python3 -m pip install "numpy>=1.23.0,<2.0"
 RUN apt install -y ros-humble-realsense2-camera
 RUN apt install -y ros-humble-realsense2-description
 

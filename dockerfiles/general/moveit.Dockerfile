@@ -10,5 +10,5 @@ RUN for repo in moveit2/moveit2.repos $(f="moveit2/moveit2_$ROS_DISTRO.repos"; t
 RUN rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
 
 WORKDIR /home/$UNAME/moveit_ws/
-RUN . /opt/ros/humble/setup.sh && colcon build --event-handlers desktop_notification- status- --cmake-args -DCMAKE_BUILD_TYPE=Release
+RUN . /opt/ros/humble/setup.sh && colcon build --event-handlers desktop_notification- status- --cmake-args -DCMAKE_BUILD_TYPE=Release --executor sequential
 RUN echo "source /home/$UNAME/moveit_ws/install/setup.bash" >> /home/$UNAME/.bashrc
