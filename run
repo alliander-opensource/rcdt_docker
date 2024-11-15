@@ -35,15 +35,25 @@ clear
 [[ -z "$image" ]] && exit 1
 
 if [ -z "$(docker images -q $image 2> /dev/null)" ]; then
-    build=$(whiptail --clear \
-        --title "Build?" \
-        --menu "The selected image was not found. Do you want to build the image?" \
+    use_cache=$(whiptail --clear \
+        --title "Build with cache?" \
+        --menu "Image '$image' is not found. Do you want to build it with or without cache?" \
         $MENU_HEIGHT $MENU_WIDTH $CHOICE_HEIGHT \
-        "yes" "" \
-        "yes, without cache" "" \
+        "with cache" "" \
+        "without cache" "" \
         2>&1 >/dev/tty)
     clear
-    [[ -z "$build" ]] && exit 1
+    [[ -z "$use_cache" ]] && exit 1
+
+    colcon_build_sequential=$(whiptail --clear \
+        --title "Build?" \
+        --menu "Image '$image' is not found. Do you want to build it parallel (higher load) or sequential (slower)?" \
+        $MENU_HEIGHT $MENU_WIDTH $CHOICE_HEIGHT \
+        "parallel" "" \
+        "sequential" "" \
+        2>&1 >/dev/tty)
+    clear
+    [[ -z "$colcon_build_sequential" ]] && exit 1
 
     if [ ! "$(docker buildx inspect $DOCKER_BUILDER_NAME 2> /dev/null)" ]; then
         docker buildx create \
@@ -53,13 +63,15 @@ if [ -z "$(docker images -q $image 2> /dev/null)" ]; then
           --driver-opt default-load=true
     fi
 
-    NO_CACHE=$([ "$build" == "yes, without cache" ] && echo "true" || echo "")
+    NO_CACHE=$([ "$use_cache" == "without cache" ] && echo "true" || echo "")
+    COLCON_BUILD_SEQUENTIAL=$([ "$colcon_build_sequential" == "sequential" ] && echo "true" || echo "")
     docker build \
       ${NO_CACHE:+--no-cache} \
       --builder=$DOCKER_BUILDER_NAME \
       --build-arg UNAME="$USER" \
       --build-arg UID="$(id -u)" \
       --build-arg GID="$(id -g)" \
+      --build-arg COLCON_BUILD_SEQUENTIAL="$COLCON_BUILD_SEQUENTIAL" \
       -t "$image" \
       -f "$SCRIPT_DIR_PATH/dockerfiles/$image.Dockerfile" \
       "$SCRIPT_DIR_PATH/dockerfiles"
