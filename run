@@ -24,13 +24,12 @@ for dockerfile in "$SCRIPT_DIR_PATH"/dockerfiles/*.Dockerfile; do
     options+=("$(basename "$name")")
     options+=("")
 done
-choice_height="${#options[@]}"
 
 # Ask user for image option
 image=$(whiptail --clear \
     --title "RCDT Docker Launcher" \
     --menu "Which docker image would you like to run?" \
-    $MENU_HEIGHT $MENU_WIDTH $choice_height \
+    $MENU_HEIGHT $MENU_WIDTH $MENU_WIDTH \
     "${options[@]}" \
     2>&1 >/dev/tty)
 clear
@@ -40,7 +39,7 @@ if [ -z "$(docker images -q $image 2> /dev/null)" ]; then
     use_cache=$(whiptail --clear \
         --title "Build with cache?" \
         --menu "Image '$image' is not found. Do you want to build it with or without cache?" \
-        $MENU_HEIGHT $MENU_WIDTH $CHOICE_HEIGHT \
+        $MENU_HEIGHT $MENU_WIDTH $MENU_WIDTH \
         "with cache" "" \
         "without cache" "" \
         2>&1 >/dev/tty)
@@ -50,7 +49,7 @@ if [ -z "$(docker images -q $image 2> /dev/null)" ]; then
     colcon_build_sequential=$(whiptail --clear \
         --title "Build?" \
         --menu "Image '$image' is not found. Do you want to build it parallel (higher load) or sequential (slower)?" \
-        $MENU_HEIGHT $MENU_WIDTH $CHOICE_HEIGHT \
+        $MENU_HEIGHT $MENU_WIDTH $MENU_WIDTH \
         "parallel" "" \
         "sequential" "" \
         2>&1 >/dev/tty)
@@ -58,7 +57,7 @@ if [ -z "$(docker images -q $image 2> /dev/null)" ]; then
     [[ -z "$colcon_build_sequential" ]] && return 1
 
     ram_kb=$(grep MemTotal /proc/meminfo | awk '{print $2}')
-    RAM_CONSTRAINED=$([ $RAM_KB -lt 16000000 ] && echo "true" || echo "")
+    RAM_CONSTRAINED=$([ $ram_kb -lt 16000000 ] && echo "true" || echo "")
     if [ ! "$(docker buildx inspect $DOCKER_BUILDER_NAME 2> /dev/null)" ] && [ $RAM_CONSTRAINED = "true" ]; then
         docker buildx create \
           --name $DOCKER_BUILDER_NAME \
