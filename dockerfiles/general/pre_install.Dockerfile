@@ -7,6 +7,7 @@ FROM osrf/ros:humble-desktop
 ARG UNAME
 ARG UID
 ARG GID
+ARG COLCON_BUILD_SEQUENTIAL
 
 #Remove existing user with same UID if exists:
 RUN if getent passwd $UID; then userdel $(id -nu $UID); else :; fi
