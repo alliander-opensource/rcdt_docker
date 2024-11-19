@@ -4,86 +4,81 @@
 # 
 # SPDX-License-Identifier: Apache-2.0
 
-#Define script path:
-script_path=$(
+MENU_HEIGHT=$(($LINES - 3))
+MENU_WIDTH=$(($COLUMNS - 80))
+DOCKER_BUILDER_NAME=ram-constrained-builder
+
+SCRIPT_DIR_PATH=$(
     cd "$(dirname "${BASH_SOURCE[0]}")" || exit
     pwd -P
 )
 
-#Define menu settings:
-height=20
-width=50
-choice_height=10
+# If required directories do not exist, create them
+mkdir -p ~/docker_ws
+mkdir -p ~/.vscode-server
 
-#Define image options based on dockerfiles in dockerfiles directory:
+# Define image options based on dockerfiles in dockerfiles directory
 options=()
-for dockerfile in "$script_path"/dockerfiles/*.Dockerfile; do
+for dockerfile in "$SCRIPT_DIR_PATH"/dockerfiles/*.Dockerfile; do
     name=${dockerfile%.*}
     options+=("$(basename "$name")")
     options+=("")
 done
 
-#Ask user for image option:
+# Ask user for image option
 image=$(whiptail --clear \
     --title "RCDT Docker Launcher" \
     --menu "Which docker image would you like to run?" \
-    $height $width $choice_height \
+    $MENU_HEIGHT $MENU_WIDTH $MENU_WIDTH \
     "${options[@]}" \
     2>&1 >/dev/tty)
 clear
-[[ -z "$image" ]] && { return 1; }
+[[ -z "$image" ]] && return 1
 
-#Check if the image is already installed:
-lines=$(docker images "$image" | wc -l)
-if [ "$lines" == 2 ]; then
-    installed=true
-else
-    installed=false
-fi
-
-#If no docker_ws directory exists, create it:
-mkdir -p ~/docker_ws
-mkdir -p ~/.vscode-server
-
-#If installed, launch the image:
-if $installed; then
-    printf 'Starting %s...\n\n' "$image"
-    docker compose -f .devcontainer/docker-compose.yml run --rm $image
-
-#If not installed, ask to install:
-else
-    build=$(whiptail --title "Install?" \
-        --menu "The selected image was not found. Do you want to install the image?" \
-        $height $width $choice_height \
-        "yes" "" \
-        "yes, without cache" "" \
-        "no" "" \
+if [ -z "$(docker images -q $image 2> /dev/null)" ]; then
+    use_cache=$(whiptail --clear \
+        --title "Build with cache?" \
+        --menu "Image '$image' is not found. Do you want to build it with or without cache?" \
+        $MENU_HEIGHT $MENU_WIDTH $MENU_WIDTH \
+        "with cache" "" \
+        "without cache" "" \
         2>&1 >/dev/tty)
     clear
-    [[ -z "$build" ]] && { return 1; }
+    [[ -z "$use_cache" ]] && return 1
 
-    if [ "$build" == "yes" ]; then
-        # Build with cache:
-        docker build \
-            --memory=6g \
-            --build-arg UNAME="$USER" \
-            --build-arg UID="$(id -u)" \
-            --build-arg GID="$(id -g)" \
-            -t "$image" \
-            -f "$script_path/dockerfiles/$image.Dockerfile" \
-            "$script_path/dockerfiles"
-    elif [ "$build" == "yes, without cache" ]; then
-        # Build without cache:
-        docker build \
-            --no-cache \
-            --memory=6g \
-            --build-arg UNAME="$USER" \
-            --build-arg UID="$(id -u)" \
-            --build-arg GID="$(id -g)" \
-            -t "$image" \
-            -f "$script_path/dockerfiles/$image.Dockerfile" \
-            "$script_path/dockerfiles"
-    else
-        return 1
+    colcon_build_sequential=$(whiptail --clear \
+        --title "Build?" \
+        --menu "Image '$image' is not found. Do you want to build it parallel (higher load) or sequential (slower)?" \
+        $MENU_HEIGHT $MENU_WIDTH $MENU_WIDTH \
+        "parallel" "" \
+        "sequential" "" \
+        2>&1 >/dev/tty)
+    clear
+    [[ -z "$colcon_build_sequential" ]] && return 1
+
+    ram_kb=$(grep MemTotal /proc/meminfo | awk '{print $2}')
+    RAM_CONSTRAINED=$([ $ram_kb -lt 16000000 ] && echo "true" || echo "")
+    if [ ! "$(docker buildx inspect $DOCKER_BUILDER_NAME 2> /dev/null)" ] && [ $RAM_CONSTRAINED = "true" ]; then
+        docker buildx create \
+          --name $DOCKER_BUILDER_NAME \
+          --driver=docker-container \
+          --driver-opt memory=14g \
+          --driver-opt default-load=true
     fi
+
+    NO_CACHE=$([ "$use_cache" == "without cache" ] && echo "true" || echo "")
+    COLCON_BUILD_SEQUENTIAL=$([ "$colcon_build_sequential" == "sequential" ] && echo "true" || echo "")
+    docker build \
+      ${NO_CACHE:+--no-cache} \
+      ${RAM_CONSTRAINED:+--builder=$DOCKER_BUILDER_NAME} \
+      --build-arg UNAME="$USER" \
+      --build-arg UID="$(id -u)" \
+      --build-arg GID="$(id -g)" \
+      --build-arg COLCON_BUILD_SEQUENTIAL="$COLCON_BUILD_SEQUENTIAL" \
+      -t "$image" \
+      -f "$SCRIPT_DIR_PATH/dockerfiles/$image.Dockerfile" \
+      "$SCRIPT_DIR_PATH/dockerfiles"
 fi
+
+echo Running $image ...
+docker compose -f $SCRIPT_DIR_PATH/.devcontainer/docker-compose.yml run --rm $image
