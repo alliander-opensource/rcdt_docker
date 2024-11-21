@@ -6,6 +6,7 @@ services:
   franka:
     image: franka
     container_name: franka
+    runtime: nvidia
     network_mode: host
     privileged: true
     mem_limit: 6gb
@@ -17,10 +18,12 @@ services:
     environment:
       - "DISPLAY"
       - "RCUTILS_COLORIZED_OUTPUT=1"
+      - NVIDIA_VISIBLE_DEVICES=all
     tty: true
   mobile_manipulator:
     image: mobile_manipulator
     container_name: mobile_manipulator
+    runtime: nvidia
     network_mode: host
     privileged: true
     mem_limit: 6gb
@@ -32,10 +35,12 @@ services:
     environment:
       - "DISPLAY"
       - "RCUTILS_COLORIZED_OUTPUT=1"
+      - NVIDIA_VISIBLE_DEVICES=all
     tty: true
   panther:
     image: panther
     container_name: panther
+    runtime: nvidia
     network_mode: host
     privileged: true
     mem_limit: 6gb
@@ -47,10 +52,12 @@ services:
     environment:
       - "DISPLAY"
       - "RCUTILS_COLORIZED_OUTPUT=1"
+      - NVIDIA_VISIBLE_DEVICES=all
     tty: true
   ros2:
     image: ros2
     container_name: ros2
+    runtime: nvidia
     network_mode: host
     privileged: true
     mem_limit: 6gb
@@ -61,4 +68,5 @@ services:
     environment:
       - "DISPLAY"
       - "RCUTILS_COLORIZED_OUTPUT=1"
+      - NVIDIA_VISIBLE_DEVICES=all
     tty: true

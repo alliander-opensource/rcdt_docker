@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 #Pull the base image:
-FROM osrf/ros:humble-desktop-full
+FROM osrf/ros:humble-desktop
 ARG UNAME
 ARG UID
 ARG GID
