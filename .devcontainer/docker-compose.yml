@@ -12,14 +12,13 @@ services:
     mem_limit: 6gb
     volumes:
       - "/tmp/.X11-unix:/tmp/.X11-unix"
-      - "${HOME}/.vscode-server:${HOME}/.vscode-server"
-      - "${HOME}/docker_ws:${HOME}/docker_ws"
+      - "${HOME}/.vscode-server:/home/rcdt/.vscode-server"
+      - "${HOME}/docker_ws:/home/rcdt/docker_ws"
       - "/dev:/dev"
     environment:
       - "DISPLAY"
       - "RCUTILS_COLORIZED_OUTPUT=1"
       - NVIDIA_VISIBLE_DEVICES=all
-    tty: true
   mobile_manipulator:
     image: mobile_manipulator
     container_name: mobile_manipulator
@@ -29,14 +28,13 @@ services:
     mem_limit: 6gb
     volumes:
       - "/tmp/.X11-unix:/tmp/.X11-unix"
-      - "${HOME}/.vscode-server:${HOME}/.vscode-server"
-      - "${HOME}/docker_ws:${HOME}/docker_ws"
+      - "${HOME}/.vscode-server:/home/rcdt/.vscode-server"
+      - "${HOME}/docker_ws:/home/rcdt/docker_ws"
       - "/dev/input:/dev/input"
     environment:
       - "DISPLAY"
       - "RCUTILS_COLORIZED_OUTPUT=1"
       - NVIDIA_VISIBLE_DEVICES=all
-    tty: true
   panther:
     image: panther
     container_name: panther
@@ -46,14 +44,13 @@ services:
     mem_limit: 6gb
     volumes:
       - "/tmp/.X11-unix:/tmp/.X11-unix"
-      - "${HOME}/.vscode-server:${HOME}/.vscode-server"
-      - "${HOME}/docker_ws:${HOME}/docker_ws"
+      - "${HOME}/.vscode-server:/home/rcdt/.vscode-server"
+      - "${HOME}/docker_ws:/home/rcdt/docker_ws"
       - "/dev/input:/dev/input"
     environment:
       - "DISPLAY"
       - "RCUTILS_COLORIZED_OUTPUT=1"
       - NVIDIA_VISIBLE_DEVICES=all
-    tty: true
   ros2:
     image: ros2
     container_name: ros2
@@ -63,10 +60,9 @@ services:
     mem_limit: 6gb
     volumes:
       - "/tmp/.X11-unix:/tmp/.X11-unix"
-      - "${HOME}/.vscode-server:${HOME}/.vscode-server"
-      - "${HOME}/docker_ws:${HOME}/docker_ws"
+      - "${HOME}/.vscode-server:/home/rcdt/.vscode-server"
+      - "${HOME}/docker_ws:/home/rcdt/docker_ws"
     environment:
       - "DISPLAY"
       - "RCUTILS_COLORIZED_OUTPUT=1"
       - NVIDIA_VISIBLE_DEVICES=all
-    tty: true
